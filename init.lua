@@ -1,167 +1,38 @@
 local config = {
+    --Set colorscheme
+    colorscheme = "default_theme",
 
-  -- Set colorscheme
-  colorscheme = "default_theme",
+    -- Disable default plugins
+    enabled = require "user.core.default_plugins",
 
-  -- Disable default plugins
-  enabled = {
-    bufferline = true,
-    neo_tree = true,
-    lualine = true,
-    gitsigns = true,
-    colorizer = true,
-    toggle_term = true,
-    comment = true,
-    symbols_outline = true,
-    indent_blankline = true,
-    dashboard = false,
-    which_key = false,
-    neoscroll = true,
-    ts_rainbow = true,
-    ts_autotag = true,
-  },
+    -- Disable AstroNvim ui features
+    ui = require "user.core.ui",
 
-  -- Disable AstroNvim ui features
-  ui = {
-    nui_input = true,
-    telescope_select = true,
-  },
+    -- Configure plugins
+    plugins = require "user.plugins.plugins",
 
-  -- Configure plugins
-  plugins = require "user.plugins.plugins",
+    -- Add paths for including more VS Code style snippets in luasnip
+    luasnip = require "user.core.luasnip",
 
+    -- CMP Source Priorities
+    cmp = require "user.core.cmp",
 
-  -- Add paths for including more VS Code style snippets in luasnip
-  luasnip = {
-    vscode_snippet_paths = {},
-  },
+    -- Extend LSP configuration
+    lsp = require "user.plugins.lsp",
 
-  -- CMP Source Priorities
-  -- modify here the priorities of default cmp sources
-  -- higher value == higher priority
-  -- The value can also be set to a boolean for disabling default sources:
-  -- false == disabled
-  -- true == 1000
-  cmp = {
-    source_priority = {
-      nvim_lsp = 1000,
-      luasnip = 750,
-      buffer = 500,
-      path = 250,
-    },
-  },
+    -- Diagnostics configuration (for vim.diagnostics.config({}))
+    diagnostics = require "user.core.diagnostics",
 
-  -- Extend LSP configuration
-  lsp = {
-    -- enable servers that you already have installed without lsp-installer
-    servers = {
-      -- "pyright"
-    },
-    -- add to the server on_attach function
-    -- on_attach = function(client, bufnr)
-    -- end,
+    -- null-ls configuration
+    ["null-ls"] = require "user.plugins.null-ls",
 
-    -- override the lsp installer server-registration function
-    -- server_registration = function(server, opts)
-    --   require("lspconfig")[server.name].setup(opts)
-    -- end
-
-    -- Add overrides for LSP server settings, the keys are the name of the server
-    ["server-settings"] = {
-      -- example for addings schemas to yamlls
-      -- yamlls = {
-      --   settings = {
-      --     yaml = {
-      --       schemas = {
-      --         ["http://json.schemastore.org/github-workflow"] = ".github/workflows/*.{yml,yaml}",
-      --         ["http://json.schemastore.org/github-action"] = ".github/action.{yml,yaml}",
-      --         ["http://json.schemastore.org/ansible-stable-2.9"] = "roles/tasks/*.{yml,yaml}",
-      --       },
-      --     },
-      --   },
-      -- },
-    },
-  },
-
-  -- Diagnostics configuration (for vim.diagnostics.config({}))
-  diagnostics = {
-    virtual_text = true,
-    underline = true,
-  },
-
-  -- null-ls configuration
-  ["null-ls"] = function()
-    -- Formatting and linting
-    -- https://github.com/jose-elias-alvarez/null-ls.nvim
-    local status_ok, null_ls = pcall(require, "null-ls")
-    if not status_ok then
-      return
-    end
-
-    -- Check supported formatters
-    -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
-    local formatting = null_ls.builtins.formatting
-
-    -- Check supported linters
-    -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
-    local diagnostics = null_ls.builtins.diagnostics
-
-    null_ls.setup {
-      debug = false,
-      sources = {
-        -- Set a formatter
-        formatting.rufo,
-        -- Set a linter
-        diagnostics.rubocop,
-      },
-      -- NOTE: You can remove this on attach function to disable format on save
-      on_attach = function(client)
-        if client.resolved_capabilities.document_formatting then
-          vim.api.nvim_create_autocmd("BufWritePre", {
-            desc = "Auto format before save",
-            pattern = "<buffer>",
-            callback = vim.lsp.buf.formatting_sync,
-          })
-        end
-      end,
-    }
-  end,
-
-  -- This function is run last
-  -- good place to configure mappings and vim options
-  polish = function()
-    local map = vim.keymap.set
-    local set = vim.opt
-    -- Set options
-    set.relativenumber = true
-    set.shiftwidth = 4
-    set.smartindent = true
-    set.tabstop = 4
-
-    -- Set key bindings
-    map("n", "<C-s>", ":w<CR>")
-    map("n", "<TAB>", ":BufferLineCycleNext<CR>")
-    map("n", "<S-Tab>", ":BufferLineCyclePrev<CR>")
-    map("n", "<leader>w", ":ToggleTerm<CR>")
-    map("n", "<leader>e", ":Neotree toggle<CR>")
-    map("n", "<leader>t", ":Telescope<CR>")
-    map("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration of current symbol" })
-    map("n", "gd", vim.lsp.buf.definition, { desc = "Show the definition of current symbol" })
-    map("n", "gI", vim.lsp.buf.implementation, { desc = "Go to implementation of current symbol" })
-    map("n", "<leader>/", function()
-      require("Comment.api").toggle_current_linewise()
-    end, { desc = "Toggle comment line" })
-
-
-    -- Set autocommands
-    vim.api.nvim_create_augroup("packer_conf", {})
-    vim.api.nvim_create_autocmd("BufWritePost", {
-      desc = "Sync packer after modifying plugins.lua",
-      group = "packer_conf",
-      pattern = "plugins.lua",
-      command = "source <afile> | PackerSync",
-    })
-  end,
+    -- This function is run last
+    -- good place to configure mappings and vim options
+    polish = function()
+        require "user.core.options"
+        require "user.core.mappings"
+        require "user.core.autocmds"
+    end,
 }
 
 return config
