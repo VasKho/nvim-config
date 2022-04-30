@@ -25,8 +25,29 @@ return {
                 padding = { left = 1, right = 1 },
                 separator = { right = '' },
             },
-            'diff',
-            'diagnostics'
+            {
+                'diff',
+                colored = true,
+                diff_color = {
+                    added = { fg = '#00FF00', bg = "#414868" },
+                    modified = { fg = '#00FFFF', bg = "#414868" },
+                    removed = { fg = '#FF0000', bg = "#414868" },
+                },
+                symbols = {added = '+', modified = '~', removed = '-'},
+                separator = { right = '' },
+            },
+            {
+                'diagnostics',
+                sources = { "nvim_diagnostic" },
+                symbols = { error = " ", warn = " ", info = " ", hint = " " },
+                diagnostics_color = {
+                    error = { bg = '#1a1b26' },
+                    warn  = { bg = '#1a1b26' },
+                    info  = { bg = '#1a1b26' },
+                    hint  = { bg = '#1a1b26' },
+                },
+                separator = { right = '' },
+            },
         },
         lualine_c = {
             {
