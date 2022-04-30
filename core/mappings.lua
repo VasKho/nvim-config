@@ -32,3 +32,7 @@ map("n", "<ESC>", ":noh<CR>")
 
 -- Toggle comment
 map("n", "<leader>/", function() require("Comment.api").toggle_current_linewise() end)
+
+
+-- Toggle markdown preview
+map("n", "md", ":MarkdownPreviewToggle<CR>")
